@@ -2,6 +2,7 @@ import express, { Response } from "express";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import authRoutes from "./routes/auth";
 
 dotenv.config();
 
@@ -12,7 +13,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 app.get("/", (_, res: Response) => res.send("Hello World"));
-
+app.use("/api/auth", authRoutes);
 // db connection
 mongoose
   .connect(mongoURI, {
