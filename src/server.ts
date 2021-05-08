@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ const port = process.env.PORT || 2000;
 const mongoURI = process.env.MONGODB_URI;
 app.use(express.json());
 app.use(morgan("dev"));
+app.use(cookieParser());
 
 app.get("/", (_, res: Response) => res.send("Hello World"));
 app.use("/api/auth", authRoutes);
