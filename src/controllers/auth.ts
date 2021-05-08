@@ -3,6 +3,7 @@ import User from "../models/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import cookie from "cookie";
+import { auth } from "../middleware/auth";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -96,20 +97,20 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const me = async (req: Request, res: Response) => {
-  try {
-    const token = req.cookies.token;
-    if (!token) throw new Error("Unauthenticated.");
+export const me = (_: Request, res: Response) => {
+  return res.json(res.locals.user);
+};
 
-    const { username }: any = jwt.verify(token, process.env.JWT_SECRET);
-
-    const user = await User.findOne({ username }).select("-password");
-
-    if (!user) throw new Error("Unauthenticated.");
-
-    return res.json(user);
-  } catch (error) {
-    console.log(error);
-    res.status(401).json({ error: error.message });
-  }
+export const logout = async (req: Request, res: Response) => {
+  res.set(
+    "Set-Cookie",
+    cookie.serialize("token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production" ? true : false,
+      sameSite: "strict",
+      expires: new Date(0),
+      path: "/",
+    })
+  );
+  res.status(200).json({ success: true });
 };
