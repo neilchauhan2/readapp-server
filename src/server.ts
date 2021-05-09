@@ -2,8 +2,10 @@ import express, { Response } from "express";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import authRoutes from "./routes/auth";
 import cookieParser from "cookie-parser";
+
+import authRoutes from "./routes/auth";
+import postRoutes from "./routes/post";
 
 dotenv.config();
 
@@ -16,6 +18,7 @@ app.use(cookieParser());
 
 app.get("/", (_, res: Response) => res.send("Hello World"));
 app.use("/api/auth", authRoutes);
+app.use("/api/posts", postRoutes);
 // db connection
 mongoose
   .connect(mongoURI, {
