@@ -5,6 +5,6 @@ export default interface PostInterface extends Document {
   title: string;
   slug: string;
   body: string;
-  subName: string;
   user: string;
+  sub: string;
 }

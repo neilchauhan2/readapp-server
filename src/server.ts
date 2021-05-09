@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/auth";
 import postRoutes from "./routes/post";
+import subRoutes from "./routes/sub";
 
 dotenv.config();
 
@@ -19,6 +20,8 @@ app.use(cookieParser());
 app.get("/", (_, res: Response) => res.send("Hello World"));
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/subs", subRoutes);
+
 // db connection
 mongoose
   .connect(mongoURI, {
