@@ -1,9 +1,8 @@
-import e, { Request, Response } from "express";
+import { Request, Response } from "express";
 import User from "../models/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import cookie from "cookie";
-import { auth } from "../middleware/auth";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -34,15 +33,7 @@ export const register = async (req: Request, res: Response) => {
       password: hash,
     });
     await user.save();
-    return res.json({
-      user: {
-        _id: user["_id"],
-        username: user["username"],
-        email: user["email"],
-        createdAt: user["createdAt"],
-        updatedAt: user["updatedAt"],
-      },
-    });
+    return res.json(user);
   } catch (error) {
     return res.status(500).json(error);
   }
@@ -68,7 +59,7 @@ export const login = async (req: Request, res: Response) => {
     if (!passwordMatch)
       return res.status(401).json({ password: "Password incorrect." });
 
-    const token = jwt.sign({ username }, process.env.JWT_SECRET);
+    const token = jwt.sign({ username }, process.env.JWT_SECRET!);
 
     res.set(
       "Set-Cookie",
@@ -81,15 +72,7 @@ export const login = async (req: Request, res: Response) => {
       })
     );
 
-    return res.json({
-      user: {
-        _id: user["_id"],
-        username: user["username"],
-        email: user["email"],
-        createdAt: user["createdAt"],
-        updatedAt: user["updatedAt"],
-      },
-    });
+    return res.json(user);
   } catch (error) {
     return res.status(500).json({
       error: "Please enter a valid username and password.",
@@ -101,7 +84,7 @@ export const me = (_: Request, res: Response) => {
   return res.json(res.locals.user);
 };
 
-export const logout = async (req: Request, res: Response) => {
+export const logout = async (_: Request, res: Response) => {
   res.set(
     "Set-Cookie",
     cookie.serialize("token", "", {

@@ -22,6 +22,7 @@ export const createPost = async (req: Request, res: Response) => {
       user,
       identifier,
       slug,
+      subName: sub,
       sub: subRecord,
     });
     await post.save();
@@ -30,5 +31,26 @@ export const createPost = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Something went wrong." });
+  }
+};
+
+export const getPosts = async (_: Request, res: Response) => {
+  try {
+    const posts = await Post.find().sort({ updatedAt: "desc" });
+    return res.json(posts);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Something went wrong." });
+  }
+};
+
+export const getPost = async (req: Request, res: Response) => {
+  const { identifier, slug } = req.params;
+  try {
+    const post = await Post.findOne({ identifier, slug }).populate("sub");
+    return res.json(post);
+  } catch (error) {
+    console.log(error);
+    return res.status(404).json({ error: "Post not found." });
   }
 };

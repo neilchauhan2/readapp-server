@@ -12,7 +12,7 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 2000;
-const mongoURI = process.env.MONGODB_URI;
+const mongoURI = process.env.MONGODB_URI!;
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cookieParser());
