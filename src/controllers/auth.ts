@@ -9,6 +9,14 @@ export const register = async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
     // validation
     let errors: any = {};
+
+    if (username.length === 0)
+      errors.username = "Please enter a valid username.";
+    if (email.length === 0) errors.email = "Please enter a valid email.";
+    if (password.length === 0) errors.password = "Please enter a valid valid.";
+
+    if (Object.keys(errors).length > 0) return res.status(400).json(errors);
+
     const emailUser = await User.findOne({
       email,
     });
