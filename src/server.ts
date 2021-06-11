@@ -8,6 +8,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth";
 import postRoutes from "./routes/post";
 import subRoutes from "./routes/sub";
+import miscRoutes from "./routes/misc";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.get("/", (_, res: Response) => res.send("Hello World"));
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/subs", subRoutes);
+app.use("/api/misc", miscRoutes);
 
 // db connection
 mongoose
