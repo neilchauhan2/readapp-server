@@ -37,9 +37,21 @@ export const vote = async (req: Request, res: Response) => {
     vote = await await Vote.findOne({ post })
       .populate("post")
       .populate("user", "username");
-    return res.json(vote);
+    const count = await countVotes(post);
+    return res.json({ vote, voteCount: count });
   } catch (error) {
     console.log(error);
     return res.json({ error: "Something went wrong." });
+  }
+};
+
+export const countVotes = async (post) => {
+  try {
+    const count = await Vote.countDocuments({ post });
+    if (count > 0) return count;
+    else return 0;
+  } catch (error) {
+    console.log(error);
+    return -1;
   }
 };
