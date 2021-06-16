@@ -8,4 +8,5 @@ export default interface PostInterface extends Document {
   subName: string;
   user: string;
   sub: string;
+  voteScore: number;
 }
