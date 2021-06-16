@@ -20,9 +20,29 @@ export const commentOnPost = async (req: Request, res: Response) => {
       user,
     });
     await comment.save();
-    return res.json(comment);
+    const count = await countComments(post);
+    const updatedPost = await Post.findByIdAndUpdate(post["id"], {
+      commentCount: count,
+    });
+    await updatedPost.save();
+
+    const updatedComment = await Comment.findById(comment["id"])
+      .populate("post")
+      .populate("user");
+
+    return res.json(updatedComment);
   } catch (error) {
     console.log(error);
     return res.status(404).json({ error: "Post not found." });
+  }
+};
+
+const countComments = async (post) => {
+  try {
+    const count = await Comment.countDocuments({ post });
+    return count;
+  } catch (error) {
+    console.log(error);
+    return 0;
   }
 };
