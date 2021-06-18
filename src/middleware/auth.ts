@@ -1,23 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import User from "../models/User";
 
-export const auth = async (req: Request, res: Response, next: NextFunction) => {
+import User from "../models/interfaces/user";
+
+export const auth = async (_: Request, res: Response, next: NextFunction) => {
   try {
-    const token = req.cookies.token;
-    if (!token) throw new Error("Unauthenticated.");
+    const user: User | undefined = res.locals.user;
 
-    const { username }: any = jwt.verify(token, process.env.JWT_SECRET!);
-
-    const user = await User.findOne({ username }).select("-password");
-
-    if (!user) throw new Error("Unauthenticated.");
-
-    res.locals.user = user;
+    if (!user) throw new Error("Unauthenticated");
 
     return next();
-  } catch (error) {
-    console.log(error);
-    return res.status(401).json({ error: "Unauthenticated." });
+  } catch (err) {
+    console.log(err);
+    return res.status(401).json({ error: "Unauthenticated" });
   }
 };

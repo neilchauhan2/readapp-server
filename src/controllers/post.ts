@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Post from "../models/Post";
 import Sub from "../models/Sub";
+import Vote from "../models/Vote";
 import { makeId, slugify } from "../util/helpers";
 
 export const createPost = async (req: Request, res: Response) => {
@@ -36,10 +37,15 @@ export const createPost = async (req: Request, res: Response) => {
 
 export const getPosts = async (_: Request, res: Response) => {
   try {
-    const posts = await Post.find()
+    const posts = await Post.find();
+    if (res.locals.user)
+      posts.forEach((post) => setUserVote(res.locals.user, post));
+
+    const newPosts = await Post.find()
       .populate("user", "username")
       .sort({ updatedAt: "desc" });
-    return res.json(posts);
+
+    return res.json(newPosts);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Something went wrong." });
@@ -49,10 +55,33 @@ export const getPosts = async (_: Request, res: Response) => {
 export const getPost = async (req: Request, res: Response) => {
   const { identifier, slug } = req.params;
   try {
-    const post = await Post.findOne({ identifier, slug }).populate("sub");
-    return res.json(post);
+    const post = await Post.findOne({ identifier, slug });
+
+    if (res.locals.user) setUserVote(res.locals.user, post);
+
+    const newPost = await Post.findOne({ identifier, slug });
+
+    return res.json(newPost);
   } catch (error) {
     console.log(error);
     return res.status(404).json({ error: "Post not found." });
+  }
+};
+
+const setUserVote = async (user, post) => {
+  try {
+    let vote;
+    vote = await Vote.findOne({ post, user });
+    console.log(vote);
+
+    let userVote =
+      vote["value"] === -1 || vote["value"] === 1 ? vote["value"] : 0;
+
+    const updatedPost = await Post.findByIdAndUpdate(post["id"], {
+      userVote,
+    });
+    await updatedPost.save();
+  } catch (error) {
+    console.log(error);
   }
 };
