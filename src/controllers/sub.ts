@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import Post from "../models/Post";
 import Sub from "../models/Sub";
 
 export const createSub = async (req: Request, res: Response) => {
@@ -30,6 +31,18 @@ export const createSub = async (req: Request, res: Response) => {
     await sub.save();
 
     return res.json(sub);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Something went wrong." });
+  }
+};
+
+export const getSub = async (req: Request, res: Response) => {
+  const name = req.params.name;
+  try {
+    const sub = await Sub.findOne({ name }).populate("post");
+    const posts = await Post.find({ subName: sub.name }).exec();
+    return res.json({ sub, posts });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Something went wrong." });
