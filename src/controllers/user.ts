@@ -9,9 +9,9 @@ export const getUserSubmissions = async (req: Request, res: Response) => {
       username: req.params.username,
     }).select("-password");
 
-    const posts = await Post.find({ user }).populate("sub");
+    const posts = await Post.find({ user }).populate("sub").populate("user");
 
-    const comments = await Comment.find({ user });
+    const comments = await Comment.find({ user }).populate("post");
 
     let submissions: any[] = [];
     posts.forEach((p) => submissions.push({ type: "Post", ...p.toJSON() }));
