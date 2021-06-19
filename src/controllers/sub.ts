@@ -48,3 +48,13 @@ export const getSub = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Something went wrong." });
   }
 };
+
+export const getTopSubs = async (_: Request, res: Response) => {
+  try {
+    const subs = await Sub.find({}).sort({ post: "desc" }).limit(5);
+    return res.json(subs);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Something went wrong." });
+  }
+};
