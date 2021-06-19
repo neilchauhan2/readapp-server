@@ -37,6 +37,20 @@ export const commentOnPost = async (req: Request, res: Response) => {
   }
 };
 
+export const getPostComment = async (req: Request, res: Response) => {
+  const { identifier, slug } = req.params;
+  try {
+    const post: object = await Post.findOne({ identifier, slug });
+
+    const comments = await Comment.find({ post });
+
+    return res.json(comments);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Something went wrong." });
+  }
+};
+
 const countComments = async (post) => {
   try {
     const count = await Comment.countDocuments({ post });
