@@ -59,7 +59,9 @@ export const getPost = async (req: Request, res: Response) => {
 
     if (res.locals.user) setUserVote(res.locals.user, post);
 
-    const newPost = await Post.findOne({ identifier, slug });
+    const newPost = await Post.findOne({ identifier, slug })
+      .populate("user")
+      .populate("sub");
 
     return res.json(newPost);
   } catch (error) {
