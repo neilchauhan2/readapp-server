@@ -2,13 +2,12 @@ import { Router } from "express";
 import { commentOnPost, getPostComment } from "../controllers/comment";
 import { createPost, getPost, getPosts } from "../controllers/post";
 import { auth } from "../middleware/auth";
-import { user } from "../middleware/user";
 const router = Router();
 
-router.post("/", user, auth, createPost);
-router.get("/", user, getPosts);
-router.get("/:identifier/:slug", user, getPost);
-router.post("/:identifier/:slug/comments", user, auth, commentOnPost);
-router.get("/:identifier/:slug/comments", user, getPostComment);
+router.post("/", auth, createPost);
+router.get("/", getPosts);
+router.get("/:identifier/:slug", getPost);
+router.post("/:identifier/:slug/comments", auth, commentOnPost);
+router.get("/:identifier/:slug/comments", getPostComment);
 
 export default router;

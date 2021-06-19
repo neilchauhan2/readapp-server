@@ -8,7 +8,6 @@ const PostSchema: Schema = new Schema(
     slug: { type: String, required: true },
     body: { type: String },
     voteScore: { type: Number, default: 0 },
-    userVote: { type: Number, default: 0 },
     commentCount: { type: Number, default: 0 },
     subName: { type: String, required: true },
     sub: { type: Schema.Types.ObjectId, ref: "Sub", required: true },

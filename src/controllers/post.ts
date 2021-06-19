@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import Post from "../models/Post";
 import Sub from "../models/Sub";
-import Vote from "../models/Vote";
 import { makeId, slugify } from "../util/helpers";
 
 export const createPost = async (req: Request, res: Response) => {
@@ -37,15 +36,11 @@ export const createPost = async (req: Request, res: Response) => {
 
 export const getPosts = async (_: Request, res: Response) => {
   try {
-    const posts = await Post.find();
-    if (res.locals.user)
-      posts.forEach((post) => setUserVote(res.locals.user, post));
-
-    const newPosts = await Post.find()
+    const posts = await Post.find()
       .populate("user", "username")
       .sort({ updatedAt: "desc" });
 
-    return res.json(newPosts);
+    return res.json(posts);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Something went wrong." });
@@ -55,34 +50,13 @@ export const getPosts = async (_: Request, res: Response) => {
 export const getPost = async (req: Request, res: Response) => {
   const { identifier, slug } = req.params;
   try {
-    const post = await Post.findOne({ identifier, slug });
-
-    if (res.locals.user) await setUserVote(res.locals.user, post);
-
-    const newPost = await Post.findOne({ identifier, slug })
+    const post = await Post.findOne({ identifier, slug })
       .populate("user")
       .populate("sub");
 
-    return res.json(newPost);
+    return res.json(post);
   } catch (error) {
     console.log(error);
     return res.status(404).json({ error: "Post not found." });
-  }
-};
-
-const setUserVote = async (user: object, post: object) => {
-  try {
-    const vote: object = await Vote.findOne({ post, user });
-
-    let userVote = 0;
-    if (user && vote && (vote["value"] === -1 || vote["value"] === 1)) {
-      userVote = vote["value"];
-    }
-    const updatedPost = await Post.findByIdAndUpdate(post["id"], {
-      userVote,
-    });
-    await updatedPost.save();
-  } catch (error) {
-    console.log(error);
   }
 };
