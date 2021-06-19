@@ -57,7 +57,7 @@ export const getPost = async (req: Request, res: Response) => {
   try {
     const post = await Post.findOne({ identifier, slug });
 
-    if (res.locals.user) setUserVote(res.locals.user, post);
+    if (res.locals.user) await setUserVote(res.locals.user, post);
 
     const newPost = await Post.findOne({ identifier, slug })
       .populate("user")
@@ -70,15 +70,14 @@ export const getPost = async (req: Request, res: Response) => {
   }
 };
 
-const setUserVote = async (user, post) => {
+const setUserVote = async (user: object, post: object) => {
   try {
-    let vote;
-    vote = await Vote.findOne({ post, user });
-    console.log(vote);
+    const vote: object = await Vote.findOne({ post, user });
 
-    let userVote =
-      vote["value"] === -1 || vote["value"] === 1 ? vote["value"] : 0;
-
+    let userVote = 0;
+    if (user && vote && (vote["value"] === -1 || vote["value"] === 1)) {
+      userVote = vote["value"];
+    }
     const updatedPost = await Post.findByIdAndUpdate(post["id"], {
       userVote,
     });
